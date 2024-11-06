@@ -1,0 +1,34 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const utils_1 = require("../lib/utils");
+const auth_1 = require("../middleware/auth");
+const Search_1 = require("../functions/Search");
+const Login_1 = require("../functions/Login");
+const Queue_1 = require("../functions/Queue");
+const AddToQueue_1 = require("../functions/AddToQueue");
+const RoomListeners_1 = require("../functions/RoomListeners");
+const queueMiddleware_1 = require("../middleware/queueMiddleware");
+const upNextSong_1 = require("../functions/upNextSong");
+const Me_1 = require("../functions/Me");
+const getRoom_1 = require("../functions/getRoom");
+const CheckVibe_1 = require("../functions/CheckVibe");
+// import { getUser } from "../functions/getUser";
+const router = express_1.default.Router();
+router.get("/", (_req, res) => {
+    res.json(utils_1.homeResponse);
+});
+router.post("/api/auth", Login_1.login);
+router.get("/api/search", Search_1.search);
+router.get("/api/upNextSong", upNextSong_1.upNextSong);
+router.get("/api/listeners", RoomListeners_1.roomListeners);
+router.get("/api/queue", queueMiddleware_1.queueMiddleware, Queue_1.queue);
+router.use(auth_1.authMiddleware);
+router.get("/api/vibe", CheckVibe_1.checkVibe);
+router.post("/api/add", AddToQueue_1.addToQueue);
+router.get("/api/@me", Me_1.getMe);
+router.get("/api/rooms", getRoom_1.getRooms);
+exports.default = router;
