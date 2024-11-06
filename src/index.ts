@@ -35,12 +35,12 @@ const limiter = rateLimit({
 });
 
 const app = express();
-const server = createServer(app);
+const server = app
 
-const io = new Server(server, {
-  cors: cors,
-  httpCompression: true,
-});
+// const io = new Server(server, {
+//   cors: cors,
+//   httpCompression: true,
+// });
 
 app.use(
   useCors({
@@ -54,33 +54,33 @@ app.use(express.json());
 app.use(cookieParser()); // For cookie parsing
 app.use(router);
 
-io.use(async (socket: CustomSocket, next) => {
-  socket.compress(true);
-  await middleware(socket, next);
-});
+// io.use(async (socket: CustomSocket, next) => {
+//   socket.compress(true);
+//   await middleware(socket, next);
+// });
 
-io.on("connection", (socket: CustomSocket) => {
-  const eventHandlers = {
-    message: async (message: string) => sendMessage(io, socket, message),
-    heart: async (heart: any) => sendHeart(socket, heart),
-    progress: async (progress: any) => handleProgress(socket, progress),
-    seek: async (seek: number) => handleSeek(socket, seek),
-    play: async (play: any) => handlePlay(io, socket, play),
-    update: () => io.to(socket.roomInfo?.roomId || "").emit("update"),
-    deleteSong: async (data: any) => deleteSong(io, socket, data),
-    deleteAll: async () => deleteAll(io, socket),
-    upvote: async (upvote: any) => upVote(io, socket, upvote),
-    bulkDelete: async (data: any) => bulkDelete(io, socket, data),
-    playNext: async () => PlayNextSong(io, socket),
-    songEnded: async () => SongEnded(io, socket),
-    playPrev: async () => PlayPrevSong(io, socket),
-  };
+// io.on("connection", (socket: CustomSocket) => {
+//   const eventHandlers = {
+//     message: async (message: string) => sendMessage(io, socket, message),
+//     heart: async (heart: any) => sendHeart(socket, heart),
+//     progress: async (progress: any) => handleProgress(socket, progress),
+//     seek: async (seek: number) => handleSeek(socket, seek),
+//     play: async (play: any) => handlePlay(io, socket, play),
+//     update: () => io.to(socket.roomInfo?.roomId || "").emit("update"),
+//     deleteSong: async (data: any) => deleteSong(io, socket, data),
+//     deleteAll: async () => deleteAll(io, socket),
+//     upvote: async (upvote: any) => upVote(io, socket, upvote),
+//     bulkDelete: async (data: any) => bulkDelete(io, socket, data),
+//     playNext: async () => PlayNextSong(io, socket),
+//     songEnded: async () => SongEnded(io, socket),
+//     playPrev: async () => PlayPrevSong(io, socket),
+//   };
 
-  for (const [event, handler] of Object.entries(eventHandlers)) {
-    socket.on(event, handler);
-  }
+//   for (const [event, handler] of Object.entries(eventHandlers)) {
+//     socket.on(event, handler);
+//   }
 
-  socket.on("disconnect", () => handleDisconnect(socket));
-});
+//   socket.on("disconnect", () => handleDisconnect(socket));
+// });
 
 runServer(server);
